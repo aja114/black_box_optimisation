@@ -24,3 +24,14 @@ ES
 
 
 ### Quantitative results
+
+Results on Rosenbrock
+![Rosenbrock]( https://github.com/aja114/optimisation_benchmark/blob/master/imgs/rosen_results.png "Rosenbrock Results")
+
+Results on Ackley
+![Ackley]( https://github.com/aja114/optimisation_benchmark/blob/master/imgs/ackley_results.png "Ackley Results")
+
+Results on Rastrigin
+![Rastrigin]( https://github.com/aja114/optimisation_benchmark/blob/master/imgs/rastrigin_results.png "Rastrigin Results")
+
+Complete set of figures can be found by running the [script](https://github.com/aja114/optimisation_benchmark/blob/master/results_plot.py)
