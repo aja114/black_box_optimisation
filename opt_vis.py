@@ -29,7 +29,7 @@ x_sol, y_sol = find_min(x, y)
 
 print(f'Global minimum equal to {y_sol} found at ({x_sol[0]}, {x_sol[1]})')
 
-fig_3d = plot_3d(x, y)
+# fig_3d = plot_3d(x, y)
 fig_cont, sc, sc2 = plot_countour(x, y)
 
 pos = {'w': random_guess(x_range, x_min, x_max, x_shape), 'w_cand': []}
