@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 
 from create_data import make_data, find_min
 from plot_func import plot_3d, plot_countour, plot_animation
-from utils import input_parse
+from utils import input_parse, get_function, get_algorithm
 from opt_algos import random_guess
 
 
@@ -13,7 +13,7 @@ def update(frame_num, algo, pos, x_range, x_min, x_max, x_shape, f):
     w_cand = algo(pos, x_range, x_min, x_max, x_shape, f)
     sc.set_offsets(pos['w'])
     sc2.set_offsets(pos['w_cand'])
-    return sc, sc2
+    return sc2, sc
 
 
 x_shape = 2
@@ -21,7 +21,9 @@ x_min = -5
 x_max = 5
 x_range = x_max - x_min
 
-f, algo = input_parse(sys.argv)
+
+function, algorithm = input_parse(sys.argv)
+f, algo = get_function(function), get_algorithm(algorithm)
 
 x, y = make_data(f, x_min, x_max)
 
@@ -36,9 +38,7 @@ pos = {'w': random_guess(x_range, x_min, x_max, x_shape), 'w_cand': []}
 anim = plot_animation(fig_cont, update, algo, pos, x_range,
                       x_min, x_max, x_shape, f)
 
-plt.show()
+# plt.show()
 
-Writer = animation.writers['ffmpeg']
-writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-anim.save('gif/im.mp4', writer=writer)
-#anim.save('gif/anim.gif', writer='imagemagick', fps=5)
+# Save the animation
+anim.save(f'gif/{function}_{algorithm}.gif', writer='imagemagick', fps=5)

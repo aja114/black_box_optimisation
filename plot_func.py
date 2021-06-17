@@ -19,8 +19,8 @@ def plot_countour(x, y):
     fig, ax = plt.subplots(1, 1, figsize=(13, 7))
     cp = ax.contourf(x[0], x[1], y, locator=ticker.LogLocator(
         subs=range(1, 10)), cmap=cm.gist_heat_r)
-    sc = ax.scatter([], [], s=4, c='w')
     sc2 = ax.scatter([], [], s=2, c='b')
+    sc = ax.scatter([], [], s=4, c='w')
     fig.colorbar(cp)
 
     return fig, sc, sc2

@@ -10,10 +10,15 @@ def input_parse(args):
         function = 'rosen'
         algorithm = 'es'
 
+    return function, algorithm
+
+def get_function(function):
     print(f'function {function}')
-    print(f'algorithm {algorithm}')
-
     f = functions[function]
-    algo = algos[algorithm]
+    return f
 
-    return f, algo
+
+def get_algorithm(algorithm):
+    print(f'algorithm {algorithm}')
+    algo = algos[algorithm]
+    return algo

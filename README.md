@@ -21,15 +21,15 @@ comparison between ES and QD algorithms on the ackley contour map
 
 QD on ackley
 
-![QD]( https://github.com/aja114/optimisation_benchmark/blob/master/imgs/ackley_qd.gif "QD")
+![QD]( https://github.com/aja114/optimisation_benchmark/blob/master/gif/ackley_qd.gif "QD")
 
 ES on ackley
 
-![ES]( https://github.com/aja114/optimisation_benchmark/blob/master/imgs/ackley_es.gif "ES")
+![ES]( https://github.com/aja114/optimisation_benchmark/blob/master/gif/ackley_es.gif "ES")
 
 ES on rosenbrock
 
-![ES]( https://github.com/aja114/optimisation_benchmark/blob/master/imgs/rosen_es.gif "ES")
+![ES]( https://github.com/aja114/optimisation_benchmark/blob/master/gif/rosen_es.gif "ES")
 
 
 ### Quantitative results
