@@ -58,7 +58,7 @@ for f, d in data.items():
     plt.ylabel('cumulative # of solutions with distance < 5% of the target')
     plt.legend(fontsize='large')
     plt.title(f'Results for the {f} function')
-    plt.show()
+    plt.savefig(f'imgs/{f}_line_plot', pad_inches=0)
 
 
 # ### Plotting the results
@@ -72,7 +72,7 @@ for f, d in data.items():
     plt.xlabel('Algorithm')
     plt.ylabel('Mean of the solutions')
     plt.title(f'Results for the {f} function')
-    plt.show()
+    plt.savefig(f'imgs/{f}_box_plot', pad_inches=0)
 
 
 # In[ ]:

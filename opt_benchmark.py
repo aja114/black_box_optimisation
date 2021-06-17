@@ -43,4 +43,4 @@ for f_name, f in functions.items():
 
         results[f_name+'_'+algo_name] = best_sols
 
-results.to_csv('results.csv')
+results.to_csv('results2.csv')
