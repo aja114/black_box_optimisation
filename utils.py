@@ -12,6 +12,7 @@ def input_parse(args):
 
     return function, algorithm
 
+
 def get_function(function):
     print(f'function {function}')
     f = functions[function]

@@ -23,9 +23,13 @@ def ackley(x):
                                                           (np.cos(2*np.pi*x1)+np.cos(2*np.pi*x2)))+np.exp(1)+A
     return y
 
+def sqr(x):
+    y = np.sum(x**2, axis=0)
+    return y
 
 functions = {
     'rosen': rosen,
     'rastrigin': rastrigin,
-    'ackley': ackley
+    'ackley': ackley,
+    'square': sqr
 }

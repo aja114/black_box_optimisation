@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
-# In[2]:
+# In[3]:
 
 
 df = pd.read_csv('results.csv', index_col=0)
 
 
-# In[3]:
+# In[4]:
 
 
 rosen = df[[c for c in df.columns if 'rosen' in c]]
@@ -27,7 +27,7 @@ ackley = df[[c for c in df.columns if 'ackley' in c]]
 ackley.columns = [x.split('_')[-1] for x in ackley.columns]
 
 
-# In[4]:
+# In[5]:
 
 
 data = {
@@ -39,7 +39,7 @@ data = {
 
 # ### Results
 
-# In[5]:
+# In[6]:
 
 
 for f, d in data.items():
@@ -47,13 +47,26 @@ for f, d in data.items():
     print(d.mean().to_string(), end='\n\n')
 
 
-# In[8]:
+# In[9]:
+
+
+label_map = {
+    'rs': 'random search',
+    'ns': 'novelty search',
+    'es': 'evolutionary strategies',
+    'me': 'map elites',
+    'qd': 'quality diversity',
+}
+
+
+# In[10]:
 
 
 for f, d in data.items():
     bin_d = (d < 0.05).cumsum()
     fig = plt.figure(figsize=(13, 7))
-    plt.plot(bin_d, label=bin_d.columns)
+    labels = [label_map[x] for x in bin_d.columns]
+    plt.plot(bin_d, label=labels)
     plt.xlabel('# Iterations')
     plt.ylabel('cumulative # of solutions with distance < 5% of the target')
     plt.legend(fontsize='large')
@@ -68,8 +81,9 @@ for f, d in data.items():
 
 for f, d in data.items():
     fig = plt.figure(figsize=(13, 7))
-    _ = plt.boxplot(d, labels=d.columns)
-    plt.xlabel('Algorithm')
+    labels = [label_map[x] for x in bin_d.columns]
+    _ = plt.boxplot(d, labels=labels)
+    plt.xlabel('Algorithms')
     plt.ylabel('Mean of the solutions')
     plt.title(f'Results for the {f} function')
     plt.savefig(f'imgs/{f}_box_plot', pad_inches=0)
@@ -82,7 +96,3 @@ for f, d in data.items():
 
 
 # In[ ]:
-
-
-
-
