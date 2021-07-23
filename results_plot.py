@@ -11,7 +11,7 @@ import pandas as pd
 # In[3]:
 
 
-df = pd.read_csv('results.csv', index_col=0)
+df = pd.read_csv('results2.csv', index_col=0)
 
 
 # In[4]:
@@ -56,6 +56,7 @@ label_map = {
     'es': 'evolutionary strategies',
     'me': 'map elites',
     'qd': 'quality diversity',
+    'cmaes': 'cma-es'
 }
 
 
