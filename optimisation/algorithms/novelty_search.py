@@ -1,32 +1,30 @@
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-
-def nses(x, archive, function, K, npop=100, sigma=0.5, alpha=0.15):
-    noise = np.random.randn(npop, function.x_shape)
-    population = np.clip(x + sigma * noise, function.x_min, function.x_max)
-    neighbors = NearestNeighbors(
-        n_neighbors=K,
-        algorithm='ball_tree').fit(archive)
-    fit = np.mean(neighbors.kneighbors(population)[0], axis=1)
-    rewards = (fit - np.mean(fit)) / np.std(fit)
-    offset = alpha / (npop * sigma) * np.dot(noise.T, rewards)
-
-    x = np.clip(x + offset, function.x_min, function.x_max)
-
-    archive.append(x)
-    return x, archive
+from .alg import Algorithm
 
 
-def nses_update(pos, function, npop=50, sigma=0.5, alpha=0.15):
-    K = 5
-    if len(pos['population']) < K:
-        pos['population'] += [function.random_guess() for _ in range(K)]
+class NSES(Algorithm):
+    def __init__(self, function, K=7, pop_size=200, sigma=0.1, alpha=0.01):
+        super().__init__(function)
+        self.pop_size = pop_size
+        self.sigma = sigma
+        self.alpha = alpha
+        self.K = K
+        self.x = self.f.random_guess()
+        self.population = [self.f.random_guess() for _ in range(self.K)]
 
-    x = pos['x']
-    archive = pos['population']
+    def one_step(self):
+        noise = np.random.randn(self.pop_size, self.f.x_shape)
+        curr_pop = self.f.clip(self.x + self.sigma * noise)
+        neighbors = NearestNeighbors(
+            n_neighbors=self.K,
+            algorithm='ball_tree').fit(self.population)
+        fit = np.mean(neighbors.kneighbors(curr_pop)[0], axis=1)
+        rewards = (fit - np.mean(fit)) / np.std(fit)
+        offset = self.alpha / (self.pop_size * self.sigma) * \
+            np.dot(noise.T, rewards)
 
-    x, archive = nses(x, archive, function, K)
+        self.x = self.f.clip(self.x + offset)
 
-    pos['x'] = x
-    pos['population'] = archive
+        self.population.append(self.x)

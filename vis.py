@@ -7,32 +7,35 @@ from optimisation.utils.utils import input_parse, get_function, get_algorithm
 from optimisation.visualisation import Plotter
 from optimisation.functions import Function
 
-def update(frame_num, alg, pos, function):
-    alg(pos, function)
-    sc.set_offsets(pos['x'])
-    sc2.set_offsets(pos['population'])
-    return sc2, sc
-
-
 X_SHAPE = 2
 X_MIN = -5
 X_MAX = 5
 
 function_name, algorithm_name = input_parse(sys.argv)
-f, algo = get_function(function_name), get_algorithm(algorithm_name)
 
-f = Function(X_MIN, X_MAX, X_SHAPE, f)
-f.make_data()
-f.find_min()
+for algorithm_name in ['rs', 'es', 'nses', 'qdes', 'me', 'cmaes']:
+    f, algo = get_function(function_name), get_algorithm(algorithm_name)
 
-plotter = Plotter(f.x, f.y)
+    f = Function(X_MIN, X_MAX, X_SHAPE, f)
+    f.make_data()
+    f.find_min()
 
-fig_surf = plotter.surface()
-fig_cont, sc, sc2 = plotter.countour()
+    algo = algo(f)
 
-pos = {'x': f.random_guess(), 'population': []}
-anim = plotter.animation(fig_cont, update, algo, pos, f)
-plt.show()
+    plotter = Plotter(f.x, f.y)
+
+    # fig_surf = plotter.surface()
+    fig_cont, sc, sc2 = plotter.countour()
+
+    def update(frame_num, alg):
+        alg.one_step()
+        sc.set_offsets(alg.x)
+        sc2.set_offsets(alg.population)
+        return sc2, sc
+
+    pos = {'x': f.random_guess(), 'population': []}
+    anim = plotter.animation(fig_cont, update, algo)
+    plt.show()
 
 # Save the animation
 # anim.save(f'gif/{function}_{algorithm}.gif', writer='imagemagick', fps=5)

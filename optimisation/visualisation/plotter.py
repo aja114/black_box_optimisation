@@ -3,6 +3,7 @@ from mpl_toolkits import mplot3d
 import matplotlib.animation as animation
 from matplotlib import cm, ticker
 
+
 class Plotter:
     def __init__(self, x, y):
         self.x = x
@@ -18,7 +19,6 @@ class Plotter:
 
         return fig
 
-
     def countour(self):
         fig, ax = plt.subplots(1, 1, figsize=(13, 7))
         cp = ax.contourf(self.x[..., 0], self.x[..., 1], self.y,
@@ -28,7 +28,6 @@ class Plotter:
         fig.colorbar(cp)
 
         return fig, sc, sc2
-
 
     def animation(self, fig, update, *args):
         line_ani = animation.FuncAnimation(

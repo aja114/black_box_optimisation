@@ -1,119 +1,95 @@
 import numpy as np
 
+from .alg import Algorithm
 
-def cma_es_update(pos, function, npop=64):
-    # Initialisation
-    if len(pos) <= 3:
-        # Initialisation
-        mu = npop // 4
 
-        C = np.eye(function.x_shape, function.x_shape).astype(np.float32)
+class CMAES(Algorithm):
+    def __init__(self, function, pop_size=50, sigma=0.3):
+        self.f = function
+        self.iteration = 0
 
-        sigma = 0.3
-        w = np.log(mu + 1 / 2) - \
-            np.log(np.asarray(range(1, mu + 1))).astype(np.float32)
-        w = w / np.sum(w)
+        self.pop_size = pop_size
+        self.mu = self.pop_size // 4
 
-        mu_eff = 1 / np.sum(w**2)
+        self.C = np.eye(self.f.x_shape, self.f.x_shape).astype(np.float32)
 
-        pc = np.zeros(x_shape)
-        ps = np.zeros(x_shape)
+        self.sigma = sigma
 
-        cc = (4 + mu_eff / x_shape) / (4 + x_shape + 2 * mu_eff / x_shape)
-        cs = (mu_eff + 2) / (x_shape + mu_eff + 5)
-        c1 = 2 / ((x_shape + 1.3) ** 2 + mu_eff)
-        cmu = np.min(
-            [1 - c1, 2 * ((mu_eff - 2 + (1 / mu_eff)) / ((x_shape + 2)**2 + mu_eff))])
-        ds = 1 + 2 * \
-            np.max([0, np.sqrt((mu_eff - 1) / (x_shape + 1)) - 1]) + cs
-        exp_length_gauss = np.sqrt(
-            x_shape) * (1 - 1 / (4 * x_shape) + 1 / (21 * x_shape**2))
-        C = np.triu(C) + np.triu(C, 1).T
+        w = np.log(self.mu + 1 / 2) - \
+            np.log(np.asarray(range(1, self.mu + 1))).astype(np.float32)
+        self.w = w / np.sum(w)
+
+        self.mu_eff = 1 / np.sum(self.w**2)
+        self.hsig = 0
+        self.pc = np.zeros(self.f.x_shape)
+        self.ps = np.zeros(self.f.x_shape)
+
+        self.cc = (4 + self.mu_eff / self.f.x_shape) / \
+            (4 + self.f.x_shape + 2 * self.mu_eff / self.f.x_shape)
+        self.cs = (self.mu_eff + 2) / (self.f.x_shape + self.mu_eff + 5)
+        self.c1 = 2 / ((self.f.x_shape + 1.3) ** 2 + self.mu_eff)
+        self.cmu = np.min(
+            [1 - self.c1, 2 * ((self.mu_eff - 2 + (1 / self.mu_eff)) / ((self.f.x_shape + 2)**2 + self.mu_eff))])
+        self.ds = 1 + 2 * \
+            np.max([0, np.sqrt((self.mu_eff - 1) /
+                               (self.f.x_shape + 1)) - 1]) + self.cs
+        self.exp_length_gauss = np.sqrt(
+            self.f.x_shape) * (1 - 1 / (4 * self.f.x_shape) + 1 / (21 * self.f.x_shape**2))
+
+        self.x = self.f.random_guess()
+        self.population = []
+
+    def one_step(self):
+        self.iteration += 1
+        # print("m: ", m, "shape: ", m.shape)
+        # print("p_cov: ", pc, "shape: ", pc.shape)
+        # print("hsig: ", hsig)
+        # print("p_sigma: ", ps, "shape: ", ps.shape)
+        # print("Cov: ", C, "shape: ", C.shape)
+        # print("C_sqrtinv: ", C_sqrtinv)
+        # print("sigma: ", sigma)
+        # print("fit: ", fit.shape)#, "shape: ", fit.shape)
+        # print("order: ", order.shape)#, "shape: ", order.shape)
+        # print("samples: ", samples.shape)#, "shape: ", samples.shape)
+        # print("y: ", y.shape)#, "shape: ", y.shape)
+        # print("yw: ", yw, "shape: ", yw.shape)
+        y = np.random.multivariate_normal(
+            np.zeros(self.f.x_shape), self.C, size=self.pop_size)
+        self.population = self.f.clip(self.x + self.sigma * y)
+
+        fit = self.f(self.population)
+
+        order = np.argsort(fit)[-self.mu:][::-1]
+        samples = self.population[order, :]
+        y = y[order, :]
+
+        yw = self.w.dot(y)
+
+        # Update the popuation mean
+        x = self.f.clip(self.x + self.sigma * yw)
+
+        # Update the parameters
+        C = np.triu(self.C) + np.triu(self.C, 1).T
         D, B = np.linalg.eig(C)
         D = np.sqrt(D)
-        C_sqrtinv = B.dot(np.diag(D ** -1).dot(B.T))
+        self.C_sqrtinv = B.dot(np.diag(D ** -1).dot(B.T))
 
-        pos["mu"] = mu
-        pos["C"] = C
-        pos["sigma"] = sigma
-        pos["weights"] = w
-        pos["mu_eff"] = mu_eff
-        pos["pc"] = pc
-        pos["ps"] = ps
-        pos["cc"] = cc
-        pos["cs"] = cs
-        pos["c1"] = c1
-        pos["cmu"] = cmu
-        pos["ds"] = ds
-        pos["exp_length_gauss"] = exp_length_gauss
-        pos["C_sqrtinv"] = C_sqrtinv
+        self.ps = (1 - self.cs) * self.ps + np.sqrt(self.cs * (2 - self.cs)
+                                                    * self.mu_eff) * self.C_sqrtinv.dot(yw)
 
-    mu = pos["mu"]
-    C = pos["C"]
-    sigma = pos["sigma"]
-    w = pos["weights"]
-    mu_eff = pos["mu_eff"]
-    pc = pos["pc"]
-    ps = pos["ps"]
-    cc = pos["cc"]
-    cs = pos["cs"]
-    c1 = pos["c1"]
-    cmu = pos["cmu"]
-    ds = pos["ds"]
-    exp_length_gauss = pos["exp_length_gauss"]
-    C_sqrtinv = pos["C_sqrtinv"]
-    m = pos["w"]
+        self.hsig = np.linalg.norm(self.ps) / np.sqrt(1 - (1 - self.cs) ** (2 * (
+            self.iteration + 1))) < ((1.4 + 2 / (self.f.x_shape + 1)) * self.exp_length_gauss)
+        self.pc = (1 - self.cc) * self.pc + 1 * self.hsig * \
+            np.sqrt(self.cc * (2 - self.cc) * self.mu_eff) * yw
 
-    # print("m: ", m, "shape: ", m.shape)
-    # print("p_cov: ", pc, "shape: ", pc.shape)
-    # print("hsig: ", hsig)
-    # print("p_sigma: ", ps, "shape: ", ps.shape)
-    # print("Cov: ", C, "shape: ", C.shape)
-    # print("C_sqrtinv: ", C_sqrtinv)
-    # print("sigma: ", sigma)
-    # print("fit: ", fit.shape)#, "shape: ", fit.shape)
-    # print("order: ", order.shape)#, "shape: ", order.shape)
-    # print("samples: ", samples.shape)#, "shape: ", samples.shape)
-    # print("y: ", y.shape)#, "shape: ", y.shape)
-    # print("yw: ", yw, "shape: ", yw.shape)
+        # self.pc = (1 - self.cc) * self.pc + 1 * (np.linalg.norm(self.ps) < (1.5 * self.pop_size**0.5)) * \
+        #     np.sqrt(self.cc * (2 - self.cc) * self.mu_eff) * yw
 
-    y = np.random.multivariate_normal(np.zeros(x_shape), C, size=npop)
-    samples = m + sigma * y
-    samples = np.clip(samples, x_min, x_max)
-    pos["w_cand"] = samples
+        self.C = (1 - self.c1 - self.cmu) * self.C + self.c1 * (np.outer(self.pc, self.pc) + (1 - self.hsig) * self.cc * (2 - self.cc) * self.C) + \
+            self.cmu * y.T.dot(np.diag(self.w)).dot(y)
 
-    fit = f(samples.T)
+        self.sigma = self.sigma * \
+            np.exp((self.cs / self.ds) *
+                   (np.linalg.norm(self.ps) / self.exp_length_gauss - 1))
 
-    order = np.argsort(fit)[:mu]
-    samples = samples[order, :]
-    y = y[order, :]
-
-    yw = w.dot(y)
-
-    # Update the popuation mean
-    m = np.clip(m + sigma * yw, x_min, x_max)
-
-    # Update the parameters
-
-    C = np.triu(C) + np.triu(C, 1).T
-    D, B = np.linalg.eig(C)
-    D = np.sqrt(D)
-    pos["C_sqrtinv"] = B.dot(np.diag(D ** -1).dot(B.T))
-
-    pos["ps"] = (1 - cs) * ps + np.sqrt(cs * (2 - cs)
-                                        * mu_eff) * C_sqrtinv.dot(yw)
-
-    # pos["hsig"] = np.linalg.norm(ps) / np.sqrt(1 - (1 - cs) ** (2 * (i+1))) < ((1.4 + 2 / (x_shape + 1)) * exp_length_gauss)
-    # pos["pc"] = (1 - cc) * pc + 1 * hsig * \
-    #     np.sqrt(cc * (2 - cc) * mu_eff) * yw
-    hsig = 0
-    pos["pc"] = (1 - cc) * pc + 1 * (np.linalg.norm(ps) < (1.5 * npop**0.5)) * \
-        np.sqrt(cc * (2 - cc) * mu_eff) * yw
-
-    pos["C"] = (1 - c1 - cmu) * C + c1 * (np.outer(pc, pc) + (1 - hsig) * cc * (2 - cc) * C) + \
-        cmu * y.T.dot(np.diag(w)).dot(y)
-
-    pos["sigma"] = sigma * \
-        np.exp((cs / ds) * (np.linalg.norm(ps) / exp_length_gauss - 1))
-
-    pos["w"] = m
+        self.x = x

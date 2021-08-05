@@ -9,9 +9,9 @@ def rosen(x):
 
 
 def rastrigin(x):
-    n = len(x)
+    n = x.shape[-1]
     A = 10
-    y = A * n + np.sum(x**2 - A * np.cos(2 * np.pi * x), axis=0)
+    y = A * n + np.sum(x**2 - A * np.cos(2 * np.pi * x), axis=-1)
     return y
 
 

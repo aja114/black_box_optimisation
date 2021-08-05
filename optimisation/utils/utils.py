@@ -1,6 +1,7 @@
 from ..algorithms import algorithms
 from ..functions import functions
 
+
 def input_parse(args):
     if len(args) > 2 and args[1] in functions.keys(
     ) and args[2] in algorithms.keys():

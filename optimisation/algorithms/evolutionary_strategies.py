@@ -1,21 +1,23 @@
 import numpy as np
+from .alg import Algorithm
 
 
-def es(x, function, npop=200, sigma=0.1, alpha=0.005):
-    noise = np.random.randn(npop, function.x_shape)
-    population = np.clip(x + sigma * noise, function.x_min, function.x_max)
-    fit = function(population)
+class ES(Algorithm):
+    def __init__(self, function, pop_size=200, sigma=0.1, alpha=0.005):
+        super().__init__(function)
+        self.pop_size = pop_size
+        self.sigma = sigma
+        self.alpha = alpha
+        self.x = self.f.random_guess()
+        self.population = []
 
-    rewards = (fit - np.mean(fit)) / np.std(fit)
-    offset = alpha / (npop * sigma) * np.dot(noise.T, rewards)
+    def one_step(self):
+        noise = np.random.randn(self.pop_size, self.f.x_shape)
+        self.population = self.f.clip(self.x + self.sigma * noise)
+        fit = self.f(self.population)
 
-    x_upd = x + offset
+        rewards = (fit - np.mean(fit)) / np.std(fit)
+        offset = self.alpha / (self.pop_size * self.sigma) * \
+            np.dot(noise.T, rewards)
 
-    return x_upd, population
-
-
-def es_update(pos, function, npop=200, sigma=0.1, alpha=0.005):
-    x = pos['x']
-    x, population = es(x, function, npop, sigma, alpha)
-    pos['x'] = x
-    pos['population'] = population
+        self.x = self.f.clip(self.x + offset)

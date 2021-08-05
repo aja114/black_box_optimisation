@@ -2,6 +2,7 @@ import numpy as np
 
 DATA_SIZE = 1000
 
+
 class Function:
     def __init__(self, x_min, x_max, x_shape, f):
         self.f = f
@@ -25,9 +26,18 @@ class Function:
             f'Global minimum equal to {self.y_sol} found at ({self.x_sol[0]}, {self.x_sol[1]})')
         return self.x_sol, self.y_sol
 
-    def random_guess(self):
-        guess = np.random.rand(self.x_shape) * self.x_range + self.x_min
+    def random_guess(self, range=None, min=None):
+        if range is None:
+            range = self.x_range
+
+        if min is None:
+            min = self.x_min
+
+        guess = np.random.rand(self.x_shape) * range + min
         return guess
+
+    def clip(self, x):
+        return np.clip(x, self.x_min, self.x_max)
 
     def __call__(self, x):
         return -self.f(x)
