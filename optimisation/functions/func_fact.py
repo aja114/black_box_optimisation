@@ -1,0 +1,2 @@
+class FunctionFactory:
+    pass

@@ -11,7 +11,7 @@ import pandas as pd
 # In[3]:
 
 
-df = pd.read_csv('results2.csv', index_col=0)
+df = pd.read_csv('results.csv', index_col=0)
 
 
 # In[4]:
@@ -31,7 +31,7 @@ ackley.columns = [x.split('_')[-1] for x in ackley.columns]
 
 
 data = {
-    'rosen' : rosen,
+    'rosen': rosen,
     'rastrigin': rastrigin,
     'ackley': ackley
 }
@@ -91,9 +91,6 @@ for f, d in data.items():
 
 
 # In[ ]:
-
-
-
 
 
 # In[ ]:
