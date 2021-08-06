@@ -23,13 +23,19 @@ class Plotter:
         fig, ax = plt.subplots(1, 1, figsize=(13, 7))
         cp = ax.contourf(self.x[..., 0], self.x[..., 1], self.y,
                          locator=ticker.LogLocator(subs=range(1, 10)), cmap=cm.gist_heat_r)
-        sc2 = ax.scatter([], [], s=2, c='b')
-        sc = ax.scatter([], [], s=4, c='w')
+        self.sc2 = ax.scatter([], [], s=2, c='b')
+        self.sc = ax.scatter([], [], s=4, c='w')
         fig.colorbar(cp)
 
-        return fig, sc, sc2
+        return fig, self.sc, self.sc2
 
-    def animation(self, fig, update, *args):
+    def countour_animation(self, fig, update, *args):
         line_ani = animation.FuncAnimation(
             fig, update, 100, fargs=args, interval=50, blit=True)
         return line_ani
+
+    def contour_update(self, num_iteration, alg):
+        alg.one_step()
+        self.sc.set_offsets(alg.x)
+        self.sc2.set_offsets(alg.population)
+        return self.sc2, self.sc

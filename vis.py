@@ -13,29 +13,23 @@ X_MAX = 5
 
 function_name, algorithm_name = input_parse(sys.argv)
 
-for algorithm_name in ['rs', 'es', 'nses', 'qdes', 'me', 'cmaes']:
-    f, algo = get_function(function_name), get_algorithm(algorithm_name)
+f = get_function(function_name)
 
-    f = Function(X_MIN, X_MAX, X_SHAPE, f)
-    f.make_data()
-    f.find_min()
+f = Function(X_MIN, X_MAX, X_SHAPE, f)
+f.make_data()
+f.find_min()
 
-    algo = algo(f)
+plotter = Plotter(f.x, f.y)
 
-    plotter = Plotter(f.x, f.y)
+fig_surf = plotter.surface()
+fig_surf.savefig(f'imgs/{function_name}_3d_plot.png')
+fig_cont, sc, sc2 = plotter.countour()
 
-    # fig_surf = plotter.surface()
-    fig_cont, sc, sc2 = plotter.countour()
+algo = get_algorithm(algorithm_name)
+algo = algo(f)
 
-    def update(frame_num, alg):
-        alg.one_step()
-        sc.set_offsets(alg.x)
-        sc2.set_offsets(alg.population)
-        return sc2, sc
-
-    pos = {'x': f.random_guess(), 'population': []}
-    anim = plotter.animation(fig_cont, update, algo)
-    plt.show()
+anim = plotter.countour_animation(fig_cont, plotter.contour_update, algo)
+plt.show()
 
 # Save the animation
-# anim.save(f'gif/{function}_{algorithm}.gif', writer='imagemagick', fps=5)
+# anim.save(f'gif/{function_name}_{algorithm_name}.gif', writer='imagemagick', fps=1)

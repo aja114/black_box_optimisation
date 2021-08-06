@@ -23,22 +23,13 @@ for f_name, f in functions.items():
     for algo_name, algo in algorithms.items():
         print(f_name + '_' + algo_name)
 
-        best_sols = np.zeros((NUM_EXP,))
+        scores = np.zeros((NUM_EXP,))
 
         for i in range(NUM_EXP):
             algorithm = algo(f)
-            best = algorithm.eval()
-            for _ in range(NUM_ITER):
-                algorithm.one_step()
+            score = algorithm.search_loop(NUM_ITER)
+            scores[i] = score
 
-                if algorithm.eval() < best:
-                    best = algorithm.eval()
-
-                if abs(best - f.y_sol) < 0.00001:
-                    break
-
-            best_sols[i] = best
-
-        results[f_name + '_' + algo_name] = best_sols
+        results[f_name + '_' + algo_name] = scores
 
 results.to_csv('data/results.csv')

@@ -14,7 +14,7 @@ class ES(Algorithm):
     def one_step(self):
         noise = np.random.randn(self.pop_size, self.f.x_shape)
         self.population = self.f.clip(self.x + self.sigma * noise)
-        fit = self.f(self.population)
+        fit = self.opposite_f(self.population)
 
         rewards = (fit - np.mean(fit)) / np.std(fit)
         offset = self.alpha / (self.pop_size * self.sigma) * \

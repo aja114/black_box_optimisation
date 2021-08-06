@@ -19,7 +19,7 @@ class QDES(Algorithm):
         noise = np.random.randn(self.pop_size, self.f.x_shape)
         curr_pop = self.f.clip(self.x + self.sigma * noise)
 
-        quality_fit = self.f(curr_pop)
+        quality_fit = self.opposite_f(curr_pop)
 
         neighbors = NearestNeighbors(
             n_neighbors=self.K,

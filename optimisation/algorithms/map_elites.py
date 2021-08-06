@@ -18,6 +18,7 @@ class ME(Algorithm):
     def init_grid(self):
         self.grid_size = int(self.pop_size**0.5)
         self.niche_range = self.f.x_range / self.grid_size
+        self.empty_niche = np.array([np.nan, np.nan])
 
         for i in range(self.grid_size):
             for j in range(self.grid_size):
@@ -27,20 +28,27 @@ class ME(Algorithm):
                 e_j = s_j + self.niche_range
 
                 centers = np.array([[s_j, s_i], [e_j, e_i]])
-                niche = np.mean(centers, axis=0)
-
+                niche = np.mean(centers, axis=0) if random.random() < 0.20 else self.empty_niche
                 self.population.append(niche)
+
 
     def one_step(self):
         random_elite = random.choice(self.population)
+        while random_elite is self.empty_niche:
+            random_elite = random.choice(self.population)
+
         noise = np.random.randn(self.f.x_shape)
         mutated_elite = self.f.clip(random_elite + self.sigma * noise)
         self.x = mutated_elite
 
         cell = self.get_cell(mutated_elite)
 
-        if self.f(mutated_elite) > self.f(self.population[cell]):
+        if self.population[cell] is self.empty_niche:
             self.population[cell] = mutated_elite
+
+        elif self.opposite_f(mutated_elite) > self.opposite_f(self.population[cell]):
+            self.population[cell] = mutated_elite
+
 
     def get_cell(self, x):
         cell_x = (x[0] * 0.999 - self.f.x_min) // self.niche_range

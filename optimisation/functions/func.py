@@ -40,4 +40,4 @@ class Function:
         return np.clip(x, self.x_min, self.x_max)
 
     def __call__(self, x):
-        return -self.f(x)
+        return self.f(x)

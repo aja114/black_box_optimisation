@@ -5,7 +5,7 @@ from .alg import Algorithm
 
 class CMAES(Algorithm):
     def __init__(self, function, pop_size=50, sigma=0.3):
-        self.f = function
+        super().__init__(function)
         self.iteration = 0
 
         self.pop_size = pop_size
@@ -57,7 +57,7 @@ class CMAES(Algorithm):
             np.zeros(self.f.x_shape), self.C, size=self.pop_size)
         self.population = self.f.clip(self.x + self.sigma * y)
 
-        fit = self.f(self.population)
+        fit = self.opposite_f(self.population)
 
         order = np.argsort(fit)[-self.mu:][::-1]
         samples = self.population[order, :]

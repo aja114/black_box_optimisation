@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def rosen(x):
     x0 = x[..., :-1]
     x1 = x[..., 1:]
