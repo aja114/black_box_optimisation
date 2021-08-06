@@ -10,7 +10,7 @@ from optimisation.functions import Function, functions
 X_SHAPE = 2
 X_MIN = -4
 X_MAX = 4
-NUM_EXP = 10
+NUM_EXP = 100
 NUM_ITER = 1000
 
 results = pd.DataFrame()
