@@ -26,11 +26,11 @@ class Function:
             f'Global minimum equal to {self.y_sol} found at ({self.x_sol[0]}, {self.x_sol[1]})')
         return self.x_sol, self.y_sol
 
-    def random_guess(self, range=None, min=None):
-        if range is None:
+    def random_guess(self, x_range=None, x_min=None):
+        if x_range is None:
             range = self.x_range
 
-        if min is None:
+        if x_min is None:
             min = self.x_min
 
         guess = np.random.rand(self.x_shape) * range + min

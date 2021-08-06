@@ -11,6 +11,7 @@ class ME(Algorithm):
         self.sigma = sigma
         self.x = self.f.random_guess()
         self.population = []
+        self.initial_selection_threshold = 0.2
 
         # Populate the niches
         self.init_grid()
@@ -28,9 +29,9 @@ class ME(Algorithm):
                 e_j = s_j + self.niche_range
 
                 centers = np.array([[s_j, s_i], [e_j, e_i]])
-                niche = np.mean(centers, axis=0) if random.random() < 0.20 else self.empty_niche
+                niche = np.mean(centers, axis=0) if random.random(
+                ) < self.initial_selection_threshold else self.empty_niche
                 self.population.append(niche)
-
 
     def one_step(self):
         random_elite = random.choice(self.population)
@@ -48,7 +49,6 @@ class ME(Algorithm):
 
         elif self.opposite_f(mutated_elite) > self.opposite_f(self.population[cell]):
             self.population[cell] = mutated_elite
-
 
     def get_cell(self, x):
         cell_x = (x[0] * 0.999 - self.f.x_min) // self.niche_range

@@ -1,9 +1,8 @@
-import sys
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 
-from optimisation.visualisation import Plotter
-from optimisation.utils import input_parse
 from optimisation.algorithms import algorithms
 from optimisation.functions import Function, functions
 
@@ -32,4 +31,8 @@ for f_name, f in functions.items():
 
         results[f_name + '_' + algo_name] = scores
 
-results.to_csv('data/results.csv')
+
+folder = 'data/'
+file = 'results' + datetime.now().strftime('%Y_%m_%d_%H%M') + '.csv'
+
+results.to_csv(folder + file)

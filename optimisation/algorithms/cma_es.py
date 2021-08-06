@@ -60,7 +60,6 @@ class CMAES(Algorithm):
         fit = self.opposite_f(self.population)
 
         order = np.argsort(fit)[-self.mu:][::-1]
-        samples = self.population[order, :]
         y = y[order, :]
 
         yw = self.w.dot(y)
